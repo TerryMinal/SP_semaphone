@@ -28,11 +28,23 @@ int cret_shm() {
   }
 }
 
+int get_shm() {
+  int ID = shmget(KEY, 1024, 0);
+  if (ID != -1) {
+    printf("get of shm successful. ID: %d\n", ID);
+    return ID;
+  }
+  else {
+    printf("failed to get shared memory\n");
+    print_error();
+    return 0;
+  }
+}
 // give a pointer to a pointer that will store the address of shmat
 // attaches address to passed pointer
 // if successful return 1, else return 0
 int attach_shm(void **pt) {
-  *pt = shmat(cret_shm(), 0, 0);
+  *pt = shmat(get_shm(), 0, 0);
   if (*pt != -1) {
     printf("attaching shared memory successful\n");
     return 1;
@@ -62,9 +74,10 @@ int detach_shm(void **pt) {
 // detaches from it
 // if successful, return 1 otherwise return 0
 int remove_shm() {
-  int r = shmctl(cret_shm(), IPC_RMID, NULL);
+  int ID = get_shm();
+  int r = shmctl(ID, IPC_RMID, NULL);
   if (r != -1) {
-    printf("removal of shared memory successful\n");
+    printf("removal of shared memory successful. ID: %d\n", ID);
     return 1;
   }
   else {
@@ -145,6 +158,7 @@ int main(int argc, char *argv[]) {
   char *par = argv[1];
   if (strcmp(par, "-c") == 0) {
     sem_ID = create_sem(atoi(argv[2]));
+    shm_ID = cret_shm();
   }
   // case if v tag
   else if (strcmp(par, "-v") == 0) {
@@ -155,6 +169,7 @@ int main(int argc, char *argv[]) {
   else if (strcmp(par, "-r") == 0) {
     // ID = = semget(KEY, 0, 0644);
     remove_sem();
+    remove_shm();
   }
   else {
     printf("NOTHING HAPPENED\n");

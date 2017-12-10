@@ -7,3 +7,6 @@ main:
 all: control main
 	control
 	main
+
+clean:
+	rm control
