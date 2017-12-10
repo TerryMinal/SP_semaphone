@@ -12,17 +12,13 @@
 #include "control.h"
 #include "shm.h"
 #include "sem.h"
+#include "misc.h"
 #define KEY 123
-
-// prints error
-void print_error() {
-    printf("Error: %s\n", strerror(errno));
-}
 
 // opens file story
 // if successful return file descriptor else return -1
 int open_file() {
-  int fd = open("story", O_CREAT | O_TRUNC , O_RDWR);
+  int fd = open("story", O_CREAT | O_TRUNC | O_RDWR, 0644);
   if (fd != -1) {
     return fd;
   }
@@ -48,27 +44,33 @@ int main(int argc, char *argv[]) {
   int fd;
   char *par = argv[1];
   if (strcmp(par, "-c") == 0) {
-    // sem_ID = create_sem(atoi(argv[2]));
-    // shm_ID = create_shm();
+    sem_ID = create_sem(atoi(argv[2]));
+    shm_ID = create_shm();
     fd = open_file();
   }
   // case if v tag
   else if (strcmp(par, "-v") == 0) {
     // sem_ID = semget(KEY, 0, 0644);
-    // get_sem_val();
-    printf("%s\n", story_last_line(1000));
+    get_sem_val();
+    struct stat st;
+    fstat(open_file(), &st);
+    int file_size = st.st_size;
+    char *buffer;
+    read(fd, &buffer, file_size);
+    // printf("%d\n", file_size);
+    printf("story: \n%s\n", buffer);
   }
   // case if r tag
   else if (strcmp(par, "-r") == 0) {
     // ID = = semget(KEY, 0, 0644);
     struct stat st;
     fstat(open_file(), &st);
-    int file_size = st.st_size;
+    int file_size2 = st.st_size;
     // printf("%d\n", file_size);
     char *buffer2;
-    read(open_file(), &buffer2, file_size);
-    // remove_sem();
-    // remove_shm();
+    read(open_file(), &buffer2, file_size2);
+    remove_sem();
+    remove_shm();
   }
   else {
     printf("NOTHING HAPPENED\n");

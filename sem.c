@@ -1,7 +1,17 @@
-// prints error
-void print_error() {
-    printf("Error: %s\n", strerror(errno));
-}
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include "sem.h"
+#include "misc.h"
+#define KEY 123
 
 // creates semaphore
 // if successful returns its id otherwise return 0
@@ -36,13 +46,13 @@ int get_sem() {
 }
 
 // get sem value
-// returns 1 if successful otherwise it returns 0
+// returns sem val if successful otherwise it returns 0
 int get_sem_val() {
   int ID = get_sem();
   int sem_val = semctl(ID, 0, GETVAL);
   if (sem_val != -1) {
     printf("Semaphore value: %d\n", sem_val);
-    return 1;
+    return sem_val;
   }
   else {
     printf("failed to get sem value\n");

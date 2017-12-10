@@ -18,3 +18,7 @@ int up_sem(int a);
 
 // changes the val of the semaphore. returns the new value
 int down_sem(int a);
+
+//remove sem
+// if successful return 1 otherwise return 0
+int remove_sem();
