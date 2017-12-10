@@ -3,16 +3,80 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/shm.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #define KEY 123
 
-// lazy handling of errors
+// prints error
 void print_error() {
-  if (strcmp(strerror(errno), "Success") != 0)
-    printf("error: %s\n", strerror(errno));
+    printf("Error: %s\n", strerror(errno));
 }
 
+// creates or gets memory (create + get = cret)
+// if successful returns ID of it otherwise return 0
+int cret_shm() {
+  int ID = shmget(KEY, 1024, IPC_CREAT | IPC_EXCL | 0644);
+  if (ID != -1) {
+    printf("creation of shm successful. ID: %d\n", ID);
+    return ID;
+  }
+  else {
+    printf("failed to create shared memory\n");
+    print_error();
+    return 0;
+  }
+}
+
+// give a pointer to a pointer that will store the address of shmat
+// attaches address to passed pointer
+// if successful return 1, else return 0
+int attach_shm(void **pt) {
+  *pt = shmat(cret_shm(), 0, 0);
+  if (*pt != -1) {
+    printf("attaching shared memory successful\n");
+    return 1;
+  }
+  else  {
+    printf("failed to attach shared memory\n");
+    print_error();
+    return 0;
+  }
+}
+// detaches shared memory at ID ID
+// if successful return 1 otherwise return 0
+int detach_shm(void **pt) {
+  int r = shmdt(*pt); // gets address of shm
+  if (r != -1) {
+    printf("detach shared memory successful\n");
+    return 1;
+  }
+  else {
+    printf("failed to detach shared memory\n");
+    print_error();
+    return 0;
+  }
+}
+
+// removes shared memory at ID ID. Only successful after all last process
+// detaches from it
+// if successful, return 1 otherwise return 0
+int remove_shm() {
+  int r = shmctl(cret_shm(), IPC_RMID, NULL);
+  if (r != -1) {
+    printf("removal of shared memory successful\n");
+    return 1;
+  }
+  else {
+    printf("failed to remove shared memory\n");
+    print_error();
+    return 0;
+  }
+}
+
+
+// creates semaphore
+// if successful returns its id otherwise return 0
 int create_sem(int val) {
   printf("%d\n", val);
   int ID = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0664);
@@ -23,45 +87,74 @@ int create_sem(int val) {
     return ID;
   }
   else {
-    printf("Semaphore already exists\n");
+    printf("failed to create semaphore\n");
+    print_error();
     return 0;
   }
 }
 
+//gets the shared memory id
+// if successful return id, else return 0
+int get_sem() {
+  int sem_ID = semget(KEY, 0, 0644);
+  if (sem_ID != -1) {
+    return sem_ID;
+  }
+  else {
+    printf("failed to get sem\n");
+    print_error();
+    return 0;
+  }
+}
 // get sem value
-void get_sem_val(int ID) {
+// returns 1 if successful otherwise it returns 0
+int get_sem_val() {
+  int ID = get_sem();
   int sem_val = semctl(ID, 0, GETVAL);
-  printf("Semaphore value: %d\n", sem_val);
-  print_error();
+  if (sem_val != -1) {
+    printf("Semaphore value: %d\n", sem_val);
+    return 1;
+  }
+  else {
+    printf("failed to get sem value\n");
+    print_error();
+    return 0;
+  }
 }
 
 //remove sem
-void remove_sem(int ID) {
-  semctl(ID, 0, IPC_RMID);
-  printf("Semaphore removed\n");
+// if successful return 1 otherwise return 0
+int remove_sem() {
+  int ID = get_sem();
+  int r = semctl(ID, 0, IPC_RMID);
+  if (r != -1) {
+    printf("Semaphore removed\n");
+    return 1;
+  }
+  else {
+    printf("failed to remove semaphore\n");
     print_error();
+    return 0;
+  }
 }
 
+
 int main(int argc, char *argv[]) {
-  int ID;
-  printf("ID: %d\n", ID);
+  int sem_ID;
+  int shm_ID;
   char *par = argv[1];
   if (strcmp(par, "-c") == 0) {
-    ID = create_sem(atoi(argv[2]));
-    if (ID == 0) {
-      printf("didn't create properly... exiting\n");
-      return 0;
-    }
+    sem_ID = create_sem(atoi(argv[2]));
   }
   // case if v tag
   else if (strcmp(par, "-v") == 0) {
-    ID = = semget(KEY, 0, 0644);
-    get_sem_val(ID);
+    // sem_ID = semget(KEY, 0, 0644);
+    get_sem_val();
   }
   // case if r tag
   else if (strcmp(par, "-r") == 0) {
-    ID = = semget(KEY, 0, 0644);
-    remove_sem(ID);
+    // ID = = semget(KEY, 0, 0644);
+    remove_sem();
   }
   else {
     printf("NOTHING HAPPENED\n");
