@@ -11,26 +11,36 @@
 #include <sys/sem.h>
 #include "shm.h"
 #include "sem.h"
+#include "misc.h"
 #define KEY 123
+
+// //gets the last line of the file and returns a string of it
+// char * story_last_line(int size) {
+//   int fd = open("story", O_APPEND | O_RDWR );
+//   printf("%d\n", fd);
+//   char buffer = calloc(size, sizeof(char ));
+//   lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
+//   printf("i seg fault \n");
+//   read(fd, &buffer, size);
+//   return buffer;
+// }
 
 int main() {
   //assumes shared memory and semaphore are already created
-  if (get_sem_val() <= 0) {
-    printf("file current in use\n");
-    while(get_sem_val() == 0) { /* blocking */ };
-  }
-  else {
-    down_sem(1);
-    int *shm_pt;
-    attach_shm(&shm_pt);
-    int size = *shm_pt;
-    printf("%d\n", size);
-    printf("%s\n", story_last_line(size));
-    char *str;
-    fgets(str,sizeof(str), stdin);
-    // str[strlen(str) - 1] = 0; //strips \n
-    *shm_pt = sizeof(str);
-    write(open_file(), str, sizeof(str));
-    up_sem(1);
-  }
+  down_sem(1);
+  int *shm_pt = shmat(get_shm(), 0, 0);
+  int size = *shm_pt;
+  printf("%d\n", size);
+  int fd = open("story", O_APPEND | O_RDWR );
+  char buffer[size];
+  lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
+  // printf("i seg fault \n");
+  read(fd, buffer, size);
+  printf("%s\n", buffer);
+  char str[10000];
+  fgets(str,sizeof(str), stdin);
+  *shm_pt = strlen(str);
+  shmdt(shm_pt);
+  write(fd, str, strlen(str));
+  up_sem(1);
 }

@@ -1,13 +1,23 @@
-
-// prints error
-void print_error() {
-    printf("Error: %s\n", strerror(errno));
-}
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include "control.h"
+#include "shm.h"
+#include "misc.h"
+#define KEY 123
 
 // creates or gets memory
 // if successful returns ID of it otherwise return 0
 int create_shm() {
-  int ID = shmget(KEY, 1024, IPC_CREAT | IPC_EXCL | 0644);
+  int ID = shmget(KEY, sizeof(int), IPC_CREAT | IPC_EXCL | 0644);
   if (ID != -1) {
     printf("creation of shm successful. ID: %d\n", ID);
     return ID;
@@ -22,7 +32,7 @@ int create_shm() {
 // gets id of shared memory
 // if successful returns id, else return 0
 int get_shm() {
-  int ID = shmget(KEY, 1024, 0);
+  int ID = shmget(KEY, sizeof(int), 0);
   if (ID != -1) {
     printf("get of shm successful. ID: %d\n", ID);
     return ID;
@@ -36,33 +46,33 @@ int get_shm() {
 // give a pointer to a pointer that will store the address of shmat
 // attaches address to passed pointer
 // if successful return 1, else return 0
-int attach_shm(int **pt) {
-  *pt = shmat(get_shm(), 0, 0);
-  if ( *pt !=  -1) {
-    printf("attaching shared memory successful\n");
-    return 1;
-  }
-  else  {
-    printf("failed to attach shared memory\n");
-    print_error();
-    return 0;
-  }
-}
+// int attach_shm(int **pt) {
+//   *pt = shmat(get_shm(), 0, 0);
+//   if ( *pt !=  -1) {
+//     printf("attaching shared memory successful\n");
+//     return 1;
+//   }
+//   else  {
+//     printf("failed to attach shared memory\n");
+//     print_error();
+//     return 0;
+//   }
+// }
 
 // detaches shared memory at ID ID
 // if successful return 1 otherwise return 0
-int detach_shm(int **pt) {
-  int r = shmdt(*pt); // gets address of shm
-  if (r != -1) {
-    printf("detach shared memory successful\n");
-    return 1;
-  }
-  else {
-    printf("failed to detach shared memory\n");
-    print_error();
-    return 0;
-  }
-}
+// int detach_shm(int **pt) {
+//   int r = shmdt(*pt); // gets address of shm
+//   if (r != -1) {
+//     printf("detach shared memory successful\n");
+//     return 1;
+//   }
+//   else {
+//     printf("failed to detach shared memory\n");
+//     print_error();
+//     return 0;
+//   }
+// }
 
 
 // removes shared memory at ID ID. Only successful after all last process
