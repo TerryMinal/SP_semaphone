@@ -1,21 +1,13 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/shm.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#define KEY 123
+#include "control.h"
 
 // prints error
 void print_error() {
     printf("Error: %s\n", strerror(errno));
 }
 
-// creates or gets memory (create + get = cret)
+// creates or gets memory
 // if successful returns ID of it otherwise return 0
-int cret_shm() {
+int create_shm() {
   int ID = shmget(KEY, 1024, IPC_CREAT | IPC_EXCL | 0644);
   if (ID != -1) {
     printf("creation of shm successful. ID: %d\n", ID);
@@ -28,6 +20,8 @@ int cret_shm() {
   }
 }
 
+// gets id of shared memory
+// if successful returns id, else return 0
 int get_shm() {
   int ID = shmget(KEY, 1024, 0);
   if (ID != -1) {
@@ -45,7 +39,7 @@ int get_shm() {
 // if successful return 1, else return 0
 int attach_shm(void **pt) {
   *pt = shmat(get_shm(), 0, 0);
-  if (*pt != -1) {
+  if ( *pt != (void *) -1) {
     printf("attaching shared memory successful\n");
     return 1;
   }
@@ -55,6 +49,7 @@ int attach_shm(void **pt) {
     return 0;
   }
 }
+
 // detaches shared memory at ID ID
 // if successful return 1 otherwise return 0
 int detach_shm(void **pt) {
@@ -69,6 +64,7 @@ int detach_shm(void **pt) {
     return 0;
   }
 }
+
 
 // removes shared memory at ID ID. Only successful after all last process
 // detaches from it
@@ -135,6 +131,22 @@ int get_sem_val() {
   }
 }
 
+// changes the val of the semaphore. returns the new value
+int up_sem(int a) {
+  int current = get_sem_val();
+  int ID = get_sem();
+  semctl(ID, 0, SETVAL, current + a);
+  return current + a;
+}
+
+// changes the val of the semaphore. returns the new value
+int down_sem(int a) {
+  int current = get_sem_val();
+  int ID = get_sem();
+  semctl(ID, 0, SETVAL, current - a);
+  return current - a;
+}
+
 //remove sem
 // if successful return 1 otherwise return 0
 int remove_sem() {
@@ -151,25 +163,56 @@ int remove_sem() {
   }
 }
 
+// opens file story
+// if successful return file descriptor else return -1
+int open_file() {
+  int fd = open("story", O_CREAT | O_TRUNC , O_RDWR);
+  if (fd != -1) {
+    return fd;
+  }
+  else {
+    printf("failed to open file story\n");
+    print_error();
+    return -1;
+  }
+}
+
+//gets the last line of the file and returns a string of it
+char * story_last_line(int size) {
+  int fd = open_file();
+  char *buffer;
+  lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
+  read(fd, buffer, sizeof(buffer));
+  return buffer;
+}
 
 int main(int argc, char *argv[]) {
   int sem_ID;
   int shm_ID;
+  int fd;
   char *par = argv[1];
   if (strcmp(par, "-c") == 0) {
-    sem_ID = create_sem(atoi(argv[2]));
-    shm_ID = cret_shm();
+    // sem_ID = create_sem(atoi(argv[2]));
+    // shm_ID = create_shm();
+    fd = open_file();
   }
   // case if v tag
   else if (strcmp(par, "-v") == 0) {
     // sem_ID = semget(KEY, 0, 0644);
-    get_sem_val();
+    // get_sem_val();
+    printf("%s\n", story_last_line(1000));
   }
   // case if r tag
   else if (strcmp(par, "-r") == 0) {
     // ID = = semget(KEY, 0, 0644);
-    remove_sem();
-    remove_shm();
+    struct stat st;
+    fstat(open_file(), &st);
+    int file_size = st.st_size;
+    // printf("%d\n", file_size);
+    char *buffer2;
+    read(open_file(), &buffer2, file_size);
+    // remove_sem();
+    // remove_shm();
   }
   else {
     printf("NOTHING HAPPENED\n");
