@@ -37,9 +37,9 @@ int get_shm() {
 // give a pointer to a pointer that will store the address of shmat
 // attaches address to passed pointer
 // if successful return 1, else return 0
-int attach_shm(void **pt) {
+int attach_shm(int **pt) {
   *pt = shmat(get_shm(), 0, 0);
-  if ( *pt != (void *) -1) {
+  if ( *pt !=  -1) {
     printf("attaching shared memory successful\n");
     return 1;
   }
@@ -52,7 +52,7 @@ int attach_shm(void **pt) {
 
 // detaches shared memory at ID ID
 // if successful return 1 otherwise return 0
-int detach_shm(void **pt) {
+int detach_shm(int **pt) {
   int r = shmdt(*pt); // gets address of shm
   if (r != -1) {
     printf("detach shared memory successful\n");
@@ -115,6 +115,7 @@ int get_sem() {
     return 0;
   }
 }
+
 // get sem value
 // returns 1 if successful otherwise it returns 0
 int get_sem_val() {

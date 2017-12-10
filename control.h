@@ -25,11 +25,11 @@ int get_shm();
 // give a pointer to a pointer that will store the address of shmat
 // attaches address to passed pointer
 // if successful return 1, else return 0
-int attach_shm(void **pt);
+int attach_shm(int **pt);
 
 // detaches shared memory at ID ID
 // if successful return 1 otherwise return 0
-int detach_shm(void **pt);
+int detach_shm(int **pt);
 
 // removes shared memory at ID ID. Only successful after all last process
 // detaches from it
@@ -40,9 +40,23 @@ int remove_shm();
 // if successful returns its id otherwise return 0
 int create_sem(int val);
 
+// get sem value
+// returns 1 if successful otherwise it returns 0
+int get_sem_val();
+
 //gets the shared memory id
 // if successful return id, else return 0
 int get_sem();
+
+// changes the val of the semaphore. returns the new value
+int up_sem(int a);
+
+// changes the val of the semaphore. returns the new value
+int down_sem(int a);
+
+// opens file story
+// if successful return file descriptor else return -1
+int open_file();
 
 //gets the last line of the file and returns a string of it
 char * story_last_line(int size);

@@ -2,7 +2,7 @@ control:
 	gcc -g -o control control.c
 
 main:
-	gcc -g -o main main.c
+	gcc -g control.c -o main main.c
 
 all: control main
 	control
