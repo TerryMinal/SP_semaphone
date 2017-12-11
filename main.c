@@ -14,33 +14,35 @@
 #include "misc.h"
 #define KEY 123
 
-// //gets the last line of the file and returns a string of it
-// char * story_last_line(int size) {
-//   int fd = open("story", O_APPEND | O_RDWR );
-//   printf("%d\n", fd);
-//   char buffer = calloc(size, sizeof(char ));
-//   lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
-//   printf("i seg fault \n");
-//   read(fd, &buffer, size);
-//   return buffer;
-// }
+//gets the last line of the file and returns a string of it
+char * story_last_line(int size, int fd) {
+  char buffer[1000];
+  char * buffer_ptr = buffer; 
+  lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
+  read(fd, buffer, sizeof(buffer));
+  return buffer_ptr;
+}
 
 int main() {
   //assumes shared memory and semaphore are already created
   down_sem(1);
-  int *shm_pt = shmat(get_shm(), 0, 0);
+  int * shm_pt = shmat(get_shm(), 0, 0);
   int size = *shm_pt;
-  printf("%d\n", size);
-  int fd = open("story", O_APPEND | O_RDWR );
-  char buffer[10000];
-  lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
-  // printf("i seg fault \n");
-  read(fd, buffer, size);
-  printf("%s\n", buffer);
+  //printf("%d\n", size);
+  int fd = open("story.txt", O_APPEND | O_RDWR | 0664 );
+  
+  char * last_line = story_last_line(size, fd);
+  printf("Last line of the story: %s\n", last_line);
   char str[10000];
-  fgets(str, 10000, stdin);
-  *shm_pt = strlen(str) - 1;
+  
+  printf("Enter the next line: \n"); 
+  fgets(str, sizeof(str), stdin);
+  *shm_pt = strlen(str) - 1; 
   shmdt(shm_pt);
   write(fd, str, strlen(str) - 1);
+  close(fd);
+  
   up_sem(1);
+
+  return 0; 
 }

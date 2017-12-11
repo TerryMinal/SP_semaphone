@@ -3,7 +3,7 @@ void print_error();
 
 // creates semaphore
 // if successful returns its id otherwise return 0
-int create_sem(int val);
+int create_sem();
 
 // get sem value
 // returns 1 if successful otherwise it returns 0
