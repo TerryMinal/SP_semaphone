@@ -27,13 +27,12 @@
 // }
 
 int main() {
-  printf("Starting\n");
   //assumes shared memory and semaphore are already created
   down_sem(1);
   int *shm_pt = shmat(get_shm(), 0, 0);
   int size = *shm_pt;
   printf("%d\n", size);
-  int fd = open("story", O_APPEND | O_RDWR );
+  int fd = open("story.txt", O_APPEND | O_RDWR );
   char buffer[10000];
   lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
   // printf("i seg fault \n");
