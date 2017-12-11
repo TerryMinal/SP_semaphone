@@ -32,15 +32,15 @@ int main() {
   int size = *shm_pt;
   printf("%d\n", size);
   int fd = open("story", O_APPEND | O_RDWR );
-  char buffer[size];
+  char buffer[10000];
   lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
   // printf("i seg fault \n");
   read(fd, buffer, size);
   printf("%s\n", buffer);
   char str[10000];
-  fgets(str,sizeof(str), stdin);
-  *shm_pt = strlen(str);
+  fgets(str, 10000, stdin);
+  *shm_pt = strlen(str) - 1;
   shmdt(shm_pt);
-  write(fd, str, strlen(str));
+  write(fd, str, strlen(str) - 1);
   up_sem(1);
 }
