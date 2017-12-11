@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
   char *par = argv[1];
 
   if (strcmp(par, "-c") == 0) {
-    sem_ID = create_sem(atoi(argv[2]));
+    sem_ID = create_sem();
     shm_ID = create_shm();
     int fd = open_file();
   }
