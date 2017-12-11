@@ -12,7 +12,9 @@
 #include "control.h"
 #include "sem.h"
 #include "misc.h"
+
 #define KEY 123
+#define SHM_KEY 101
 
 
 union semun {

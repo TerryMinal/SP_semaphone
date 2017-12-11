@@ -13,6 +13,7 @@
 #include "sem.h"
 #include "misc.h"
 #define KEY 123
+#define SHM_KEY 101
 
 // //gets the last line of the file and returns a string of it
 // char * story_last_line(int size) {
@@ -26,6 +27,7 @@
 // }
 
 int main() {
+  printf("Starting\n");
   //assumes shared memory and semaphore are already created
   down_sem(1);
   int *shm_pt = shmat(get_shm(), 0, 0);

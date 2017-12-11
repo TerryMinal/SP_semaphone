@@ -13,11 +13,12 @@
 #include "shm.h"
 #include "misc.h"
 #define KEY 123
+#define SHM_KEY 101
 
 // creates or gets memory
 // if successful returns ID of it otherwise return 0
 int create_shm() {
-  int ID = shmget(KEY, sizeof(int), IPC_CREAT | IPC_EXCL | 0644);
+  int ID = shmget(SHM_KEY, sizeof(int), IPC_CREAT | IPC_EXCL | 0644);
   if (ID != -1) {
     printf("Sucessfully created shared memory. ID: %d\n", ID);
     return ID;
@@ -32,7 +33,7 @@ int create_shm() {
 // gets id of shared memory
 // if successful returns id, else return 0
 int get_shm() {
-  int ID = shmget(KEY, sizeof(int), 0);
+  int ID = shmget(SHM_KEY, sizeof(int), 0);
   if (ID != -1) {
     //printf("Get of shm successful. ID: %d\n", ID);
     return ID;
