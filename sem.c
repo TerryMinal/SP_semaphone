@@ -16,15 +16,15 @@
 #define KEY 123
 #define SHM_KEY 101
 
-
+/* 
 union semun {
-  int val;    /* Value for SETVAL */
-  struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
-  unsigned short *array;  /* Array for GETALL, SETALL */
-  struct seminfo *__buf;  /* Buffer for IPC_INFO
-  (Linux-specific) */
+  int val;    // Value for SETVAL 
+  struct semid_ds *buf;    //Buffer for IPC_STAT, IPC_SET 
+  unsigned short *array;  //Array for GETALL, SETALL 
+  struct seminfo *__buf;  // Buffer for IPC_INFO
+  (Linux-specific) 
 };
-
+*/
 
 // creates semaphore
 // if successful returns its id otherwise return 0
@@ -49,7 +49,7 @@ int create_sem() {
 //gets the shared memory id
 // if successful return id, else return 0
 int get_sem() {
-  int sem_ID = semget(KEY, 0, 0644);
+  int sem_ID = semget(KEY, 1, 0644);
   if (sem_ID != -1) {
     return sem_ID;
   }
