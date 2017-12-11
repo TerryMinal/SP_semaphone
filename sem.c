@@ -21,12 +21,15 @@ int create_sem(int val) {
   int ID = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0664);
   // handling error
   if (ID != -1) {
-    semctl(ID, 0, SETVAL, val);
+    union semun sem;
+    sem.val = val; 
+    semctl(ID, 0, SETVAL, sem);
     printf("Semaphore created: %d\n", ID);
+    printf("Value set: %d\n", sem.val); 
     return ID;
   }
   else {
-    printf("failed to create semaphore\n");
+    printf("Failed to create semaphore\n");
     print_error();
     return 0;
   }
