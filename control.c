@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     fstat(fd, &st);
     int file_size = st.st_size;
     // printf("%d\n", file_size);
-    char *buffer2;
+    char buffer2[file_size];
     read(fd, &buffer2, file_size);
     printf("%s\n", buffer2);
     close(fd);
