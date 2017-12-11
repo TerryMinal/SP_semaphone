@@ -13,6 +13,7 @@
 #include "sem.h"
 #include "misc.h"
 #define KEY 123
+#define SHM_KEY 101
 
 //gets the last line of the file and returns a string of it
 char * story_last_line(int size, int fd) {
@@ -24,12 +25,13 @@ char * story_last_line(int size, int fd) {
 }
 
 int main() {
+  printf("Starting\n");
   //assumes shared memory and semaphore are already created
   down_sem(1);
   int * shm_pt = shmat(get_shm(), 0, 0);
   int size = *shm_pt;
   //printf("%d\n", size);
-  int fd = open("story.txt", O_APPEND | O_RDWR | 0664 );
+  int fd = open("story.txt", O_APPEND | O_RDWR);
   
   char * last_line = story_last_line(size, fd);
   printf("Last line of the story: %s\n", last_line);
@@ -37,10 +39,12 @@ int main() {
   
   printf("Enter the next line: \n"); 
   fgets(str, sizeof(str), stdin);
-  *shm_pt = strlen(str) - 1; 
+  lseek(fd, 0, SEEK_END);
+  write(fd, str, strlen(str));
+
+  *shm_pt = strlen(str); 
   shmdt(shm_pt);
-  write(fd, str, strlen(str) - 1);
-  close(fd);
+  //close(fd);
   
   up_sem(1);
 
