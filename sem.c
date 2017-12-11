@@ -26,13 +26,12 @@ union semun {
 
 // creates semaphore
 // if successful returns its id otherwise return 0
-int create_sem(int val) {
-  printf("%d\n", val);
+int create_sem() {
   int ID = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0664);
-  // handling error
+
   if (ID != -1) {
     union semun sem;
-    sem.val = val;
+    sem.val = 1;
     semctl(ID, 0, SETVAL, sem);
     printf("Semaphore created: %d\n", ID);
     printf("Value set: %d\n", sem.val);
@@ -53,7 +52,7 @@ int get_sem() {
     return sem_ID;
   }
   else {
-    printf("failed to get sem\n");
+    printf("Failed to get sem\n");
     print_error();
     return 0;
   }
@@ -65,11 +64,10 @@ int get_sem_val() {
   int ID = get_sem();
   int sem_val = semctl(ID, 0, GETVAL);
   if (sem_val != -1) {
-    // printf("Semaphore value: %d\n", sem_val);
     return sem_val;
   }
   else {
-    printf("failed to get sem value\n");
+    printf("Failed to get sem value\n");
     print_error();
     return 0;
   }
@@ -109,7 +107,7 @@ int remove_sem() {
     return 1;
   }
   else {
-    printf("failed to remove semaphore\n");
+    printf("Failed to remove semaphore\n");
     print_error();
     return 0;
   }

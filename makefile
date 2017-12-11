@@ -1,5 +1,5 @@
-all: control main
-	
+.PHONY: main control 
+
 main: sem.o shm.o misc.o
 	gcc -g -o main main.c sem.o shm.o misc.o
 
@@ -14,6 +14,10 @@ sem.o:
 
 shm.o:
 	gcc -c shm.c
+
+all: control main
+	control
+	main
 
 clean:
 	rm control main *.o story

@@ -14,6 +14,17 @@
 #include "misc.h"
 #define KEY 123
 
+// //gets the last line of the file and returns a string of it
+// char * story_last_line(int size) {
+//   int fd = open("story", O_APPEND | O_RDWR );
+//   printf("%d\n", fd);
+//   char buffer = calloc(size, sizeof(char ));
+//   lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
+//   printf("i seg fault \n");
+//   read(fd, &buffer, size);
+//   return buffer;
+// }
+
 int main() {
   //assumes shared memory and semaphore are already created
   down_sem(1);

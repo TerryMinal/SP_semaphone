@@ -19,13 +19,13 @@
 int create_shm() {
   int ID = shmget(KEY, sizeof(int), IPC_CREAT | IPC_EXCL | 0644);
   if (ID != -1) {
-    printf("creation of shm successful. ID: %d\n", ID);
+    printf("Sucessfully created shared memory. ID: %d\n", ID);
     return ID;
   }
   else {
-    printf("failed to create shared memory\n");
+    printf("Failed to create shared memory\n");
     print_error();
-    return 0;
+    return -1;
   }
 }
 
@@ -34,13 +34,13 @@ int create_shm() {
 int get_shm() {
   int ID = shmget(KEY, sizeof(int), 0);
   if (ID != -1) {
-    printf("get of shm successful. ID: %d\n", ID);
+    //printf("Get of shm successful. ID: %d\n", ID);
     return ID;
   }
   else {
-    printf("failed to get shared memory\n");
-    print_error();
-    return 0;
+    printf("Failed to get shared memory\n");
+    //print_error();
+    return -1;
   }
 }
 // give a pointer to a pointer that will store the address of shmat
@@ -82,12 +82,12 @@ int remove_shm() {
   int ID = get_shm();
   int r = shmctl(ID, IPC_RMID, NULL);
   if (r != -1) {
-    printf("removal of shared memory successful. ID: %d\n", ID);
+    printf("Successfully removed shared memory. ID: %d\n", ID);
     return 1;
   }
   else {
-    printf("failed to remove shared memory\n");
+    printf("Failed to remove shared memory\n");
     print_error();
-    return 0;
+    return -1;
   }
 }
