@@ -14,6 +14,16 @@
 #include "misc.h"
 #define KEY 123
 
+
+union semun {
+  int val;    /* Value for SETVAL */
+  struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
+  unsigned short *array;  /* Array for GETALL, SETALL */
+  struct seminfo *__buf;  /* Buffer for IPC_INFO
+  (Linux-specific) */
+};
+
+
 // creates semaphore
 // if successful returns its id otherwise return 0
 int create_sem(int val) {
@@ -22,10 +32,10 @@ int create_sem(int val) {
   // handling error
   if (ID != -1) {
     union semun sem;
-    sem.val = val; 
+    sem.val = val;
     semctl(ID, 0, SETVAL, sem);
     printf("Semaphore created: %d\n", ID);
-    printf("Value set: %d\n", sem.val); 
+    printf("Value set: %d\n", sem.val);
     return ID;
   }
   else {

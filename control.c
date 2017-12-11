@@ -32,28 +32,18 @@ int open_file() {
 
 }
 
-//gets the last line of the file and returns a string of it
-char * story_last_line(int size) {
-  int fd = open_file();
-  char buffer[1000];
-  char * buffer_ptr = buffer; 
-  lseek(fd, -size, SEEK_END); //starts from end of file and work way back size bytes
-  read(fd, buffer, sizeof(buffer));
-  return buffer_ptr;
-}
 
 int main(int argc, char *argv[]) {
   int sem_ID;
   int shm_ID;
   char *par = argv[1];
-  
+
   if (strcmp(par, "-c") == 0) {
     sem_ID = create_sem(atoi(argv[2]));
-    /*
     shm_ID = create_shm();
     int fd = open_file();
   }
-  
+
   // case if v tag
   else if (strcmp(par, "-v") == 0) {
     // sem_ID = semget(KEY, 0, 0644);
@@ -88,6 +78,5 @@ int main(int argc, char *argv[]) {
   else {
     printf("NOTHING HAPPENED\n");
   }
-  */ 
   return 0;
 }
