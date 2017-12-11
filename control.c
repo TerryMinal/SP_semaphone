@@ -18,7 +18,7 @@
 // opens file story
 // if successful return file descriptor else return -1
 int open_file() {
-  int fd = open("story.txt", O_CREAT | O_TRUNC | O_RDWR, 0644);
+  int fd = open("story", O_CREAT | O_TRUNC | O_RDWR, 0644);
   if (fd != -1) {
     printf("Story created!\n");
     close(fd);
@@ -45,40 +45,38 @@ int main(int argc, char *argv[]) {
   }
 
   // case if v tag
-  else if (strcmp(argv[1], "-v") == 0) {
-    int fd = open("story.txt", O_RDONLY, 0644 );
+  else if (strcmp(par, "-v") == 0) {
+    // sem_ID = semget(KEY, 0, 0644);
+    printf("%d\n", get_sem_val());
+    int fd = open("story", O_RDONLY, 0644 );
+    // ID = = semget(KEY, 0, 0644);
     struct stat st;
     fstat(fd, &st);
     int file_size = st.st_size;
+    printf("%d\n", file_size);
+    // printf("%d\n", file_size);
     char buffer2[file_size];
     read(fd, &buffer2, file_size);
-    printf("Story:\n %s\n", buffer2);
+    printf("%s\n", buffer2);
     close(fd);
   }
-
   // case if r tag
-  else if (strcmp(argv[1], "-r") == 0) {
-    int fd = open("story.txt",  O_RDONLY, 0644 );
+  else if (strcmp(par, "-r") == 0) {
+    // ID = = semget(KEY, 0, 0644);
+    int fd = open("story",  O_RDONLY, 0644 );
     struct stat st;
     fstat(fd, &st);
     int file_size = st.st_size;
+    // printf("%d\n", file_size);
     char buffer2[file_size];
     read(fd, &buffer2, file_size);
-    printf("Story:\n %s\n", buffer2);
+    printf("%s\n", buffer2);
     close(fd);
-
-    remove("story.txt");
-    printf("Story has been removed\n");
     remove_sem();
     remove_shm();
   }
-
   else {
     printf("NOTHING HAPPENED\n");
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> 0ceb0ff97f1811469631349f2bb99124961af590
   return 0;
 }
