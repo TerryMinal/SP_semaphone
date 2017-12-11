@@ -49,7 +49,7 @@ int create_sem() {
 //gets the shared memory id
 // if successful return id, else return 0
 int get_sem() {
-  int sem_ID = semget(KEY, 0, 0644);
+  int sem_ID = semget(KEY, 1, 0644);
   if (sem_ID != -1) {
     return sem_ID;
   }
