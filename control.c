@@ -18,7 +18,7 @@
 // opens file story
 // if successful return file descriptor else return -1
 int open_file() {
-  int fd = open("story.txt", O_CREAT | O_TRUNC | O_RDWR, 0644);
+  int fd = open("story", O_CREAT | O_TRUNC | O_RDWR, 0644);
   if (fd != -1) {
     printf("Story created!\n");
     close(fd);
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
   else if (strcmp(par, "-v") == 0) {
     // sem_ID = semget(KEY, 0, 0644);
     printf("%d\n", get_sem_val());
-    int fd = open("story.txt", O_RDONLY, 0644 );
+    int fd = open("story", O_RDONLY, 0644 );
     // ID = = semget(KEY, 0, 0644);
     struct stat st;
     fstat(fd, &st);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
   // case if r tag
   else if (strcmp(par, "-r") == 0) {
     // ID = = semget(KEY, 0, 0644);
-    int fd = open("story.txt",  O_RDONLY, 0644 );
+    int fd = open("story",  O_RDONLY, 0644 );
     struct stat st;
     fstat(fd, &st);
     int file_size = st.st_size;
