@@ -16,14 +16,15 @@
 #define KEY 123
 #define SHM_KEY 101
 
-/*
+//Shoutout to Adeeb for showing me this! 
+#if defined(__linux__)
 union semun {
-  int val;    // Value for SETVAL 
-  struct semid_ds *buf;    // Buffer for IPC_STAT, IPC_SET 
-  unsigned short *array;  // Array for GETALL, SETALL 
-  struct seminfo *__buf;  // Buffer for IPC_INFO
+  int val;
+  struct semid_ds *buf;
+  unsigned short  *array;
+  struct seminfo  *__buf;
 };
-*/
+#endif
 
 // creates semaphore
 // if successful returns its id otherwise return 0

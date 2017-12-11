@@ -21,7 +21,7 @@ int main() {
 
   //assumes shared memory and semaphore are already created
   down_sem(1);
-  printf("Downed SEM\n");
+  //printf("Downed SEM\n");
   int *shm_pt = shmat(get_shm(), 0, 0);
   int size = *shm_pt;
   printf("%d\n", size);
