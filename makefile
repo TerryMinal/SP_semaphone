@@ -1,3 +1,5 @@
+all: main control
+
 main: sem.o shm.o misc.o
 	gcc -g -o main main.c sem.o shm.o misc.o
 
